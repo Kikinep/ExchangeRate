@@ -9,8 +9,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ExchangeRateRequest {
+    private HttpResponse<String> response;
 
-    public ExchangeRateKeys convertCurrency(String fromCurrency, String toCurrency, String amount) {
+    public ExchangeRateKeys convertCurrency(String fromCurrency, String toCurrency, double amount) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
                 .newBuilder()
