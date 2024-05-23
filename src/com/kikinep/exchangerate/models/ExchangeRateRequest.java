@@ -9,9 +9,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class ExchangeRateRequest {
-    private HttpResponse<String> response;
+    private HttpResponse<String> response = null;
 
-    public ExchangeRateKeys convertCurrency(String fromCurrency, String toCurrency, double amount) {
+    public ExchangeRateRequest(String fromCurrency, String toCurrency, String amount) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest
                 .newBuilder()
@@ -19,13 +19,18 @@ public class ExchangeRateRequest {
                         + fromCurrency + "/" + toCurrency + "/" + amount))
                 .build();
 
-        HttpResponse<String> response = null;
         try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            this.response = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
 
-        return new Gson().fromJson(response.body(), ExchangeRateKeys.class);
+    public HttpResponse<String> getResponse() {
+        return response;
+    }
+
+    public ExchangeRateKeys convertCurrency() {
+        return new Gson().fromJson(this.response.body(), ExchangeRateKeys.class);
     }
 }

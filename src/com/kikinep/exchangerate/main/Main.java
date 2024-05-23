@@ -9,32 +9,32 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-
-        // main loop
         Scanner scanner = new Scanner(System.in);
         int selection = 0;
         RequestHistory history = new RequestHistory();
 
         String mainMenu = """
-                
+
                 ****************************************************
                 Welcome to the Currency Conversion System!
-                
+
                 What would you like to do?
-                
+
                 1) Convert Currency
                 2) Show Conversion History
                 3) Exit
-                
+
                 ****************************************************
-                
+
                 """;
 
         String currencyCodeMenu = """
-                
+
                 ****************************************************
-                From which currency code would you like to convert:
+                From which currency code would you like to convert?
                 
+                Example currency codes:
+
                 ARS - Argentine Peso
                 BOB - Bolivian Boliviano
                 BRL - Brazilian Real
@@ -42,15 +42,18 @@ public class Main {
                 COP - Colombian Peso
                 USD - United States Dollar
                 MXN - Mexican Peso
-                
+
                 ****************************************************
-                
+
                 """;
 
         while (selection != 3) {
             System.out.println(mainMenu);
-            selection = scanner.nextInt();
-            scanner.nextLine();
+            try {
+                selection = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                selection = 0;
+            }
 
             if (selection == 1) {
                 System.out.println(currencyCodeMenu);
@@ -59,13 +62,18 @@ public class Main {
                 System.out.println("To which currency code would you like to convert?");
                 String toCurrency = scanner.nextLine();
                 System.out.println("Input the amount of " + fromCurrency + " you would like to convert to " + toCurrency + ":");
-                double amount = scanner.nextDouble();
-                scanner.nextLine();
+                String amount = scanner.nextLine();
 
-                CurrencyConversion newConversion = new CurrencyConversion(new ExchangeRateRequest().convertCurrency(fromCurrency, toCurrency, amount), amount);
-                history.addConversion(newConversion);
+                ExchangeRateRequest request = new ExchangeRateRequest(fromCurrency, toCurrency, amount);
 
-                System.out.println(newConversion);
+                if (request.getResponse().statusCode() == 200) {
+                    CurrencyConversion newConversion = new CurrencyConversion(request.convertCurrency(), amount);
+                    history.addConversion(newConversion);
+                    System.out.println(newConversion);
+                } else {
+                    System.out.println("Unable to make conversion due to an error in currency codes or amount!");
+                }
+
             } else if (selection == 2) {
                 if (history.getConversions() > 0) {
                     System.out.println("Conversion History:");

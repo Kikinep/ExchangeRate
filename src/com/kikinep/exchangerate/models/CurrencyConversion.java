@@ -6,11 +6,11 @@ public class CurrencyConversion {
     private final double amount;
     private final double convertedAmount;
 
-    public CurrencyConversion(ExchangeRateKeys keys, double amount) {
+    public CurrencyConversion(ExchangeRateKeys keys, String amount) {
         this.fromCurrency = keys.base_code();
         this.toCurrency = keys.target_code();
         this.convertedAmount = keys.conversion_result();
-        this.amount = amount;
+        this.amount = Double.parseDouble(amount);
     }
 
     public String getFromCurrency() {
